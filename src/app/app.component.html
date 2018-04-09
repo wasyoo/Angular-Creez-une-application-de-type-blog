@@ -1,7 +1,21 @@
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <ul class="nav navbar-nav">
+
+      <li routerLinkActive="active">
+        <a routerLink="posts">Posts</a>
+      </li>
+
+      <li routerLinkActive="active">
+        <a routerLink="posts/new">nouveau post</a>
+      </li>
+
+    </ul>
+  </div>
+</nav>
 <div class="container">
   <div class="row">
-    <h2>Posts</h2>
-      <app-post-list-component [posts]="Posts"></app-post-list-component>
+    <router-outlet></router-outlet>
   </div>
 </div>
 
