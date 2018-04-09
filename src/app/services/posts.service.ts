@@ -1,68 +1,58 @@
 import {Injectable, OnInit} from '@angular/core';
 import {Subject} from 'rxjs/Subject';
+import {Post} from '../models/post.model';
+import * as firebase from 'firebase';
+import DataSnapshot = firebase.database.DataSnapshot;
 
 @Injectable()
 export class PostsService {
 
-  private posts = [
-    {
-      id: 1,
-      title: 'Mon Premier post',
-      content: 'Lorem ipsum dolor sit amet, ' +
-      'vidisse persequeris cu his. Solum legimus ' +
-      'commune sit cu, vis fuisset adolescens elaboraret ' +
-      'et. Eos id graecis comprehensam, vix te mediocrem comprehensam.',
-      loveIts: -1,
-      created_at: new Date()
-    },
-    {
-      id: 2,
-      title: 'Mon deuxième post',
-      content: 'Lorem ipsum dolor sit amet, ' +
-      'vidisse persequeris cu his. Solum legimus commune sit cu, ' +
-      'vis fuisset adolescens elaboraret et. Eos id graecis comprehensam, ' +
-      'vix te mediocrem comprehensam. Scribentur dissentiunt an has, pro wisi prompta albucius ad.',
-      loveIts: 0,
-      created_at: new Date()
-    },
-    {
-      id: 3,
-      title: 'Encore un post',
-      content: 'Lorem ipsum dolor sit amet, ' +
-      'vidisse persequeris cu his. Solum legimus commune sit cu, ' +
-      'vis fuisset adolescens elaboraret et. Eos id graecis comprehensam, ' +
-      'vix te mediocrem comprehensam. Scribentur dissentiunt an has, pro wisi prompta albucius ad.',
-      loveIts: 2,
-      created_at: new Date()
-    }
-  ];
+  private posts: Post[] = [];
   postSubject = new Subject<any[]>();
 
   emitPost() {
-    this.postSubject.next(this.posts.slice());
+    this.postSubject.next(this.posts);
   }
 
   constructor() {}
 
+  savePosts() {
+    firebase.database().ref('/posts').set(this.posts);
+  }
+
+  // récupérer la liste des posts
+  getPosts() {
+    firebase.database().ref('/posts')
+      .on('value', (data: DataSnapshot) => {
+          this.posts = data.val() ? data.val() : [];
+          this.emitPost();
+        }
+      );
+  }
+
   // l'ajout d'un nouveau post
-  addPost(title, content) {
-    const PostObject = {
-      id: 0,
-      title: '',
-      content: '',
-      loveIts: 0,
-      created_at: new Date()
-    };
-    PostObject.title = title;
-    PostObject.content = content;
-    PostObject.id = this.posts[(this.posts.length - 1)].id + 1;
-    this.posts.push(PostObject);
+  addPost(newpost: Post) {
+    this.posts.push(newpost);
+    this.savePosts();
     this.emitPost();
   }
 
   // suppression d'un post existant
   deletePost(id: number) {
-    this.posts.splice(id, 1)
+    this.posts.splice(id, 1);
+    this.savePosts();
+    this.emitPost();
+  }
+
+  love(id: number) {
+    this.posts[id].loveIts += 1;
+    this.savePosts();
+    this.emitPost();
+  }
+
+  dontlove(id) {
+    this.posts[id].loveIts -= 1;
+    this.savePosts();
     this.emitPost();
   }
 

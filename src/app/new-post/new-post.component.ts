@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {PostsService} from "../services/posts.service";
-import {Router} from "@angular/router";
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {PostsService} from '../services/posts.service';
+import {Router} from '@angular/router';
+import {Post} from '../models/post.model';
 
 @Component({
   selector: 'app-new-post',
@@ -19,7 +20,7 @@ export class NewPostComponent implements OnInit {
   ngOnInit() {
     this.initForm();
   }
-  
+
   initForm() {
     this.postForm = this.formBuilder.group({
       'title': ['', Validators.required],
@@ -30,7 +31,8 @@ export class NewPostComponent implements OnInit {
   newPost() {
     const title = this.postForm.get('title').value;
     const content = this.postForm.get('content').value;
-    this.postService.addPost(title,content);
+    const newPost = new Post(title, content, 0, new Date());
+    this.postService.addPost(newPost);
     this.router.navigate(['/posts']);
   }
 }

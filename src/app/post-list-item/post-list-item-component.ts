@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import {PostsService} from '../services/posts.service';
+import {Post} from '../models/post.model';
 
 @Component({
   selector: 'app-post-list-item',
@@ -19,13 +20,13 @@ export class PostListItemComponent implements OnInit {
   ngOnInit() {
   }
 
-  love() {
-    this.postLoveIts += 1;
+  onlove() {
+    this.postService.love(this.index);
     this.postService.emitPost();
   }
 
-  dontlove() {
-    this.postLoveIts -= 1;
+  ondontlove() {
+    this.postService.dontlove(this.index);
     this.postService.emitPost();
   }
 
